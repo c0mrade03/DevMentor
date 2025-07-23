@@ -1,5 +1,6 @@
+import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from langchain_core.documents import Document
 
 def chunk_file(file_path):
 
@@ -9,6 +10,8 @@ def chunk_file(file_path):
     except Exception as e:
         print(f"[ERROR] Skipping file {file_path}: {e}")
         return []
+
+    file_name = os.path.basename(file_path)
 
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
@@ -20,9 +23,23 @@ def chunk_file(file_path):
 
     return [
         {
+            "chunk_id": i,
             "content": chunk,
             "source": file_path,
-            "chunk_id": i
+            "file_name": file_name
         }
         for i, chunk in enumerate(chunks)
     ]
+
+
+def create_langchain_documents(chunks):
+    langchain_documents = []
+    for chunk in chunks:
+        doc = Document(
+            page_content= chunk['content'],
+            metadata= {"chunk_id": chunk['chunk_id'], "source": chunk['source'], "file_name": chunk['file_name']}
+        )
+        langchain_documents.append(doc)
+    
+    return langchain_documents
+
