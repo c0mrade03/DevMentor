@@ -11,7 +11,7 @@ def collect_target_files(base_path, extensions):
 
 
 if __name__ == "__main__":
-  target_repo = "../cookiecutter-django"
+  target_repo = "../../cookiecutter-django"
   extensions = ['.md', '.py', '.json', '.toml', '.txt', 'yml']
 
   files = collect_target_files(target_repo, extensions)
