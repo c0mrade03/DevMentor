@@ -1,6 +1,7 @@
 import os
 import glob
 
+from . import config
 
 def collect_target_files(base_path, extensions):
   matched_files = []
@@ -11,8 +12,8 @@ def collect_target_files(base_path, extensions):
 
 
 if __name__ == "__main__":
-  target_repo = "../../cookiecutter-django"
-  extensions = ['.md', '.py', '.json', '.toml', '.txt', 'yml']
+  target_repo = config.TARGET_REPO_PATH
+  extensions = config.FILE_EXTENSIONS
 
   files = collect_target_files(target_repo, extensions)
 

@@ -1,4 +1,5 @@
 import os
+from . import config
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
@@ -14,8 +15,8 @@ def chunk_file(file_path):
     file_name = os.path.basename(file_path)
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=100,
+        chunk_size=config.CHUNK_SIZE,
+        chunk_overlap=config.CHUNK_OVERLAP,
         separators=["\n\n", "\n", ".", " ", ""]
     )
 

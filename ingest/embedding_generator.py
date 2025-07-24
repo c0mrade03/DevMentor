@@ -1,7 +1,8 @@
+from . import config
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
-embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+embedding_model = HuggingFaceEmbeddings(model_name=config.EMBEDDING_MODEL_NAME)
 
 
 
