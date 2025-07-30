@@ -1,5 +1,6 @@
 import os
 from . import config
+from .logger import logger
 from typing import List, Dict, Any
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
@@ -20,7 +21,7 @@ def chunk_file(file_path: str) -> List[Dict[str, Any]]:
         with open(file_path, 'r', encoding='utf-8') as f:
             text = f.read()
     except Exception as e:
-        print(f"[ERROR] Skipping file {file_path}: {e}")
+        logger.error(f"[ERROR] Skipping file {file_path}: {e}")
         return []
 
     file_name = os.path.basename(file_path)

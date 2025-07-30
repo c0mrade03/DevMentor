@@ -1,6 +1,7 @@
 import os
 import glob
 from . import config
+from .logger import logger
 from typing import List
 
 
@@ -31,7 +32,7 @@ if __name__ == "__main__":
 
     files = collect_target_files(target_repo, extensions)
 
-    print(f"[+] Found {len(files)} files:")
+    logger.info(f"[+] Found {len(files)} files:")
 
     for f in files[:10]:
-        print("\u2514\u2500\u2500", os.path.relpath(f, target_repo))
+        logger.info("\u2514\u2500\u2500", os.path.relpath(f, target_repo))
