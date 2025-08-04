@@ -35,4 +35,4 @@ if __name__ == "__main__":
     logger.info(f"[+] Found {len(files)} files:")
 
     for f in files[:10]:
-        logger.info("\u2514\u2500\u2500", os.path.relpath(f, target_repo))
+        logger.info(f"\u2514\u2500\u2500 {os.path.relpath(f, target_repo)}")
