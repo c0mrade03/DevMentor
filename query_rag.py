@@ -53,16 +53,21 @@ def main():
         | StrOutputParser()
     )
     logger.info("RAG chain created.")
+    print("\n--- DevMentor AI Assistant ---")
+    print("Ask questions about the codebase. Type 'quit' or 'exit' to end the session.")
 
-    # Ask a question and invoke the chain
-    question = "What is the use of create_django_issue.py?"
-    logger.info(f"Invoking chain with question: '{question}'")
-    answer = rag_chain.invoke(question)
+    while True:
+        # Ask a question and invoke the chain
+        question = input("\n--- Question ---")
+        if question.lower().strip() in ['quit', 'exit']:
+            break
+        logger.info(f"Invoking chain with question: '{question}'")
+        answer = rag_chain.invoke(question)
 
-    # Print the final answer
-    print("\n--- Answer ---")
-    print(answer)
-    print("--------------\n")
+        # Print the final answer
+        print("\n--- Answer ---")
+        print(answer)
+        print("--------------\n")
 
 
 if __name__ == "__main__":
