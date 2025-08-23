@@ -1,8 +1,10 @@
+import os
+
 # File paths and extensions
 TARGET_REPO_PATH = "../cookiecutter-django"
 FILE_EXTENSIONS = ['.md', '.py', '.json', '.toml', '.txt', '.yml']
-VECTOR_STORE_PATH = "../vector_store"
 
+VECTOR_STORE_PATH = os.getenv("VECTOR_STORE_PATH", "../vector_store")
 # Chunking parameters
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100

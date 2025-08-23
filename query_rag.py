@@ -21,7 +21,7 @@ def main():
     logger.info("Environment variables loaded.")
 
     # Load the FAISS vector store from local disk
-    logger.info("Loading vector store...")
+    logger.info(f"Attempting to load vector store from path: '{config.VECTOR_STORE_PATH}'") # <-- ADD THIS LINE    
     db = FAISS.load_local(
         config.VECTOR_STORE_PATH,
         embeddings=embedding_model,
@@ -58,7 +58,7 @@ def main():
 
     while True:
         # Ask a question and invoke the chain
-        question = input("\n--- Question ---")
+        question = input("\nQuestion: ")
         if question.lower().strip() in ['quit', 'exit']:
             break
         logger.info(f"Invoking chain with question: '{question}'")
