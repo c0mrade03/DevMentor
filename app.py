@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 from ingest.chain_setup import load_rag_chain
 
 # --- Block 1: Page Configuration ---
@@ -30,9 +31,14 @@ if prompt := st.chat_input("Ask a question about the codebase..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            answer = rag_chain.invoke(prompt)
-            st.markdown(answer)
-    
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+    # Wrote this type of code so that UX feels more like chatgpt or gemini smooth typing effect
+    placeholder = st.empty()
+    full_response = ""
+    for chunk in rag_chain.stream(prompt):
+        for char in chunk:
+            full_response += char
+            placeholder.markdown(full_response + "▌")
+            time.sleep(0.005)
+    placeholder.markdown(full_response)
+
+    st.session_state.messages.append({"role": "assistant", "content": full_response})

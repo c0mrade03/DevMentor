@@ -6,8 +6,8 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir langchain-google-genai
+EXPOSE 8501
 
 COPY . .
 
-CMD ["python", "query_rag.py"]
+CMD ["streamlit", "run", "app.py"]
