@@ -56,7 +56,9 @@ Follow these steps to set up and run DevMentor on your local machine.
 
 ### 1\. Clone the Repository
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   git clone [https://github.com/your-username/DevMentor.git](https://github.com/your-username/DevMentor.git)  cd DevMentor   `
+` git clone [https://github.com/c0mrade03/DevMentor.git](https://github.com/c0mrade03/DevMentor.git) `
+
+` cd DevMentor   `
 
 ### 2\. Set Up Environment Variables
 
@@ -69,23 +71,41 @@ The application requires a Google API key to function.
 *   Add your Google Gemini API key to the .env file.
     
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # Your .env file should look like this  GOOGLE_API_KEY="your_google_api_key_here"   `
+` # Your .env file should look like this: `
 
-### 3\. Build the Vector Store (One-Time Setup)
+` GOOGLE_API_KEY="your_google_api_key_here"   `
+
+### 3\. Configure the Target Repository
+
+Before building the knowledge base, you must specify which local repository you want to index.
+
+* Open the file `ingest/config.py`.
+* Modify the variables according to your preferences
+
+**Example:**
+` in ingest/config.py `
+
+` TARGET_REPO_PATH = "../path/to/your/cloned-repo" (default is "../cookiecutter-django" that's the open source repo I have been experimenting with small shoutout to them)`
+
+` You may change all the variables there. I know it's pretty inconvenient for now but I am working on automating them like dynamically selecting file extensions etc. For now please bear with it `
+
+### 4\. Build the Vector Store (One-Time Setup)
 
 Before you can ask questions, you need to process a repository into a vector store. This command ingests the code and creates the necessary index files.
 
 _For this example, we will use the cookiecutter-django repository, which you should have downloaded in a directory adjacent to the DevMentor project._
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   # From the DevMentor root directory, run:  python -m ingest.create_vectorstore --path ../cookiecutter-django   `
+` # From the DevMentor root directory, run: `
+
+` python -m ingest.create_vectorstore  `
 
 This process may take some time. It will create a vector\_store directory in the parent folder.
 
-### 4\. Build the Docker Image
+### 5\. Build the Docker Image
 
 Build the devmentor image using Docker Compose.
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   docker compose build   `
+`   docker compose build   `
 
 🖥️ Usage
 ---------
@@ -96,7 +116,7 @@ You can run DevMentor as either a Streamlit web app or a command-line tool.
 
 This is the primary way to use DevMentor.
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   docker compose up app   `
+`   docker compose up app   `
 
 Once the container is running, open your web browser and navigate to:**http://localhost:8501**
 
@@ -104,7 +124,7 @@ Once the container is running, open your web browser and navigate to:**http://lo
 
 For quick tests or debugging, you can use the interactive CLI.
 
-Plain textANTLR4BashCC#CSSCoffeeScriptCMakeDartDjangoDockerEJSErlangGitGoGraphQLGroovyHTMLJavaJavaScriptJSONJSXKotlinLaTeXLessLuaMakefileMarkdownMATLABMarkupObjective-CPerlPHPPowerShell.propertiesProtocol BuffersPythonRRubySass (Sass)Sass (Scss)SchemeSQLShellSwiftSVGTSXTypeScriptWebAssemblyYAMLXML`   docker compose run --rm cli   `
+`   docker compose run --rm cli   `
 
 🔮 Future Scope
 ---------------
@@ -121,4 +141,4 @@ This project has a clear roadmap for adding more powerful features:
 📜 License
 ----------
 
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+This project is licensed under the MIT License.
