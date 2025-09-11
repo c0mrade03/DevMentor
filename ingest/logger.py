@@ -1,3 +1,4 @@
+# This script is used for logging purposes
 import logging
 import sys
 

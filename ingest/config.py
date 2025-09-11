@@ -1,18 +1,23 @@
+# Config file change according to your choice
 import os
 
-# File paths and extensions
+# Default repository path for local ingestion.
 TARGET_REPO_PATH = "../cookiecutter-django"
+# File extensions to include in the data ingestion process.
 FILE_EXTENSIONS = ['.md', '.py', '.json', '.toml', '.txt', '.yml']
 
+# Path to the FAISS vector store, configurable via environment variable.
 VECTOR_STORE_PATH = os.getenv("VECTOR_STORE_PATH", "../vector_store")
-# Chunking parameters
+
+# Maximum characters per text chunk.
 CHUNK_SIZE = 500
+# Overlap between consecutive text chunks.
 CHUNK_OVERLAP = 100
 
-# Embedding model
+# Hugging Face model for generating embeddings.
 EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 
-# Prompt template
+# The prompt template that defines the AI's persona and instructions for the RAG chain.
 RAG_PROMPT_TEMPLATE = """
 You are DevMentor, a helpful and patient AI assistant for developers who are new to this project. Your main goal is to provide clear, step-by-step, beginner-friendly guidance.
 
@@ -27,3 +32,4 @@ Context:
 
 Question: {question}
 """
+

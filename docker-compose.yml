@@ -1,5 +1,5 @@
 services:
-  # Service 1: The Streamlit Web App (this is the default)
+  # Service 1: The Streamlit Web App
   app:
     build: .
     image: devmentor

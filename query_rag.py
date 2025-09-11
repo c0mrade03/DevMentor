@@ -1,3 +1,4 @@
+# This script can be used as CLI and also used for debugging
 from ingest.logger import logger
 from ingest.chain_setup import load_rag_chain
 

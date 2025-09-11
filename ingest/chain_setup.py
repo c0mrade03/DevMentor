@@ -1,3 +1,4 @@
+# This script is main engine of our code
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -14,11 +15,21 @@ from ingest import config
 
 @st.cache_resource
 def load_rag_chain():
-    # Load environment variables from .env file (for GOOGLE_API_KEY)
+    """
+    Loads and configures the complete RAG chain.
+
+    This function handles all the expensive setup operations, including loading the
+    FAISS vector store and initializing the Gemini language model. It uses
+    Streamlit's caching to ensure this setup runs only once.
+
+    Returns:
+        A runnable LangChain object representing the RAG chain.
+    """
+    # Load environment variables from .env file for the GOOGLE_API_KEY.
     load_dotenv()
     logger.info("Environment variables loaded.")
 
-    # Load the FAISS vector store from local disk
+    # Load the FAISS vector store from the local disk.
     logger.info(f"Attempting to load vector store from path: '{config.VECTOR_STORE_PATH}'")
     db = FAISS.load_local(
         config.VECTOR_STORE_PATH,
@@ -27,16 +38,17 @@ def load_rag_chain():
     )
     logger.info("Vector store loaded successfully.")
 
-    # Create a retriever from the vector store to fetch relevant documents
+    # Create a retriever from the vector store to fetch relevant documents.
     retriever = db.as_retriever(search_kwargs={"k": 5})
 
-    # LLM Initialization Google Gemini
-    logger.info("Initializing Google Gemini model (gemini-2.5-flash)...")
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
+    # Initialize the Google Gemini language model.
+    logger.info("Initializing Google Gemini model (gemini-1.5-flash)...")
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1)
 
+    # Create the prompt template from the config file.
     prompt = PromptTemplate.from_template(config.RAG_PROMPT_TEMPLATE)
 
-    # The RAG chain structure
+    # Define the RAG chain using LangChain Expression Language (LCEL).
     rag_chain = (
         {"context": retriever, "question": RunnablePassthrough()}
         | prompt
@@ -45,4 +57,5 @@ def load_rag_chain():
     )
     logger.info("RAG chain created.")
 
+    # Return the fully constructed RAG chain.
     return rag_chain
