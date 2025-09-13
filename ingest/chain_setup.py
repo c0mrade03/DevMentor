@@ -42,8 +42,8 @@ def load_rag_chain():
     retriever = db.as_retriever(search_kwargs={"k": 5})
 
     # Initialize the Google Gemini language model.
-    logger.info("Initializing Google Gemini model (gemini-1.5-flash)...")
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.1)
+    logger.info("Initializing Google Gemini model...")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.1)
 
     # Create the prompt template from the config file.
     prompt = PromptTemplate.from_template(config.RAG_PROMPT_TEMPLATE)
