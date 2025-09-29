@@ -1,4 +1,5 @@
 # This script is main engine of our code
+import os
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -29,8 +30,13 @@ def load_rag_chain():
     load_dotenv()
     logger.info("Environment variables loaded.")
 
+    if not os.path.exists(config.VECTOR_STORE_PATH):
+        logger.warning(
+            "Vector Store is not yet created.")
+        return None
     # Load the FAISS vector store from the local disk.
-    logger.info(f"Attempting to load vector store from path: '{config.VECTOR_STORE_PATH}'")
+    logger.info(
+        f"Attempting to load vector store from path: '{config.VECTOR_STORE_PATH}'")
     db = FAISS.load_local(
         config.VECTOR_STORE_PATH,
         embeddings=embedding_model,

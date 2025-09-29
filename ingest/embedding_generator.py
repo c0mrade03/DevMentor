@@ -1,4 +1,4 @@
-# The script to generate embeddings
+# The script to generate embeddings (for testing purpose)
 from . import config
 from typing import List
 from langchain_huggingface import HuggingFaceEmbeddings

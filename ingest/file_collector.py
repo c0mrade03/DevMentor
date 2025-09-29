@@ -1,27 +1,35 @@
 import os
-import glob
 from . import config
 from .logger import logger
 from typing import List
 
 
-def collect_target_files(base_path: str, extensions: List[str]) -> List[str]:
-    """Recursively collects files with specified extensions from a base path.
+def collect_target_files(base_path: str) -> List[str]:
+    """
+    Recursively collects all relevant files from a base path, intelligently
+    skipping specified directories and file extensions.
 
     Args:
         base_path (str): The root directory to start searching from.
-        extensions (List[str]): A list of file extensions to match (e.g., ['.py', '.md']).
 
     Returns:
         List[str]: A list of absolute file paths for all matched files.
     """
     matched_files = []
-    # Iterate through each specified file extension.
-    for ext in extensions:
-        # Create a recursive search pattern for the current extension.
-        pattern = os.path.join(base_path, "**", f"*{ext}")
-        # Use glob to find all files matching the pattern and add them to the list.
-        matched_files.extend(glob.glob(pattern, recursive=True))
+    # Use os.walk to traverse the directory tree from the base path.
+    for root, dirs, files in os.walk(base_path):
+        # Modify dirs in-place to prevent os.walk from entering ignored directories.
+        dirs[:] = [d for d in dirs if d not in config.IGNORE_DIRS]
+
+        # Iterate through each file found in the current directory.
+        for filename in files:
+            # Split the filename to get its extension.
+            _, file_ext = os.path.splitext(filename)
+
+            # Add the file to the list if its extension is not in the ignore list.
+            if file_ext not in config.IGNORE_EXTS:
+                file_path = os.path.join(root, filename)
+                matched_files.append(file_path)
 
     return matched_files
 

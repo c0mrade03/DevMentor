@@ -3,8 +3,55 @@ import os
 
 # Default repository path for local ingestion.
 TARGET_REPO_PATH = "../cookiecutter-django"
-# File extensions to include in the data ingestion process.
-FILE_EXTENSIONS = ['.md', '.py', '.json', '.toml', '.txt', '.yml']
+
+# A list of directory names to completely ignore during the file collection process.
+# This is crucial for skipping version control, virtual environments, and build artifacts.
+IGNORE_DIRS = [
+    ".git",
+    "__pycache__",
+    "node_modules",
+    ".venv",
+    "venv",
+    "env",
+    "build",
+    "dist",
+    "github_repos",  # To avoid re-indexing repos we have cloned
+]
+
+# A list of file extensions for common binary or non-text files to ignore.
+# This provides a fast first-pass filter before the more robust content-based check.
+IGNORE_EXTS = [
+    # Compiled files
+    ".pyc",
+    ".so",
+    ".exe",
+    ".dll",
+    ".jar",
+    ".o",
+
+    # Archives
+    ".zip",
+    ".tar.gz",
+    ".rar",
+
+    # Media files
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".bmp",
+    ".svg",
+    ".mp4",
+    ".mov",
+    ".avi",
+    ".mp3",
+    ".wav",
+
+    # Other
+    ".db",
+    ".sqlite3",
+    ".env", # Avoid indexing environment variables
+]
 
 # Path to the FAISS vector store, configurable via environment variable.
 VECTOR_STORE_PATH = os.getenv("VECTOR_STORE_PATH", "../vector_store")
@@ -32,4 +79,3 @@ Context:
 
 Question: {question}
 """
-
