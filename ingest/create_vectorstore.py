@@ -18,7 +18,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", type=str, help="Github url")
-    args = parser.parse_args()
+    args = parser.parse_config.VECTOR_STORE_PATHargs()
 
     repo_path = ""
     if args.url:
@@ -114,8 +114,11 @@ def main():
     logger.info("FAISS vector store created successfully")
 
     # Save the vector store locally
-    vector_store.save_local(config.VECTOR_STORE_PATH)
-    logger.info(f"Vector store saved locally at: {config.VECTOR_STORE_PATH}")
+    vector_store_dir = "data/vector_stores"
+    store_save_path = os.path.join(vector_store_dir, repo_name)
+    os.makedirs(store_save_path, exist_ok=True)
+    vector_store.save_local(store_save_path)
+    logger.info(f"Vector store saved locally at: {store_save_path}")
 
 
 if __name__ == "__main__":

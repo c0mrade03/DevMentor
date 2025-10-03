@@ -15,7 +15,7 @@ from ingest import config
 
 
 @st.cache_resource
-def load_rag_chain():
+def load_rag_chain(repo_name: str):
     """
     Loads and configures the complete RAG chain.
 
@@ -29,16 +29,17 @@ def load_rag_chain():
     # Load environment variables from .env file for the GOOGLE_API_KEY.
     load_dotenv()
     logger.info("Environment variables loaded.")
-
-    if not os.path.exists(config.VECTOR_STORE_PATH):
+    vector_store_dir = "data/vector_stores"
+    store_path = os.path.join(vector_store_dir, repo_name)
+    if not os.path.exists(store_path):
         logger.warning(
             "Vector Store is not yet created.")
         return None
     # Load the FAISS vector store from the local disk.
     logger.info(
-        f"Attempting to load vector store from path: '{config.VECTOR_STORE_PATH}'")
+        f"Attempting to load vector store from path: '{store_path}'")
     db = FAISS.load_local(
-        config.VECTOR_STORE_PATH,
+        store_path,
         embeddings=embedding_model,
         allow_dangerous_deserialization=True
     )
