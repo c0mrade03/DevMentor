@@ -1,13 +1,17 @@
 # This script can be used as CLI and also used for debugging
 from ingest.logger import logger
 from ingest.chain_setup import load_rag_chain
+import argparse
 
 
 def main():
     """
     Main function to load the vector store, build a RAG chain with Gemini, and query it.
     """
-    rag_chain = load_rag_chain()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repo", type=str, help="Path to desired repository", required=True)
+    args = parser.parse_args()
+    rag_chain = load_rag_chain(args.repo)
     if not rag_chain:
         print("\n--- ERROR ---")
         print("The Vector Store was not found.")

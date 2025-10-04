@@ -4,7 +4,6 @@ import os
 from ingest.chain_setup import load_rag_chain
 
 
-@st.cache_data
 def get_available_github_repos():
     vector_store_dir = "data/vector_stores"
     if not os.path.exists(vector_store_dir):

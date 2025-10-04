@@ -5,7 +5,7 @@ import os
 import shutil
 
 # Page Configuration and Title
-st.set_page_config(page_title="Add Knowledge", page_icon="➕")
+st.set_page_config(page_title="Add Repository", page_icon="➕")
 st.title("Add a New Knowledge Base 🧠")
 st.info(
     "Paste a public GitHub repository URL below to download, process, and "

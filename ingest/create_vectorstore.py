@@ -18,7 +18,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", type=str, help="Github url")
-    args = parser.parse_config.VECTOR_STORE_PATHargs()
+    args = parser.parse_args()
 
     repo_path = ""
     if args.url:
