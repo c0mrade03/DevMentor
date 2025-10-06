@@ -1,4 +1,5 @@
-venv
+venv_gpu
+venv_cpu
 __pycache__/
 tests
 .env
