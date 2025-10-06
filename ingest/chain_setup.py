@@ -13,6 +13,13 @@ from ingest.embedding_generator import embedding_model
 from ingest.logger import logger
 from ingest import config
 
+# Helper function to reduce context leakage
+def format_docs(docs):
+    """
+    Formats a list of LangChain Document objects into a single string,
+    joining their page_content with newlines.
+    """
+    return "\n\n".join(doc.page_content for doc in docs)
 
 @st.cache_resource
 def load_rag_chain(repo_name: str):
@@ -57,7 +64,7 @@ def load_rag_chain(repo_name: str):
 
     # Define the RAG chain using LangChain Expression Language (LCEL).
     rag_chain = (
-        {"context": retriever, "question": RunnablePassthrough()}
+        {"context": retriever|format_docs, "question": RunnablePassthrough()}
         | prompt
         | llm
         | StrOutputParser()

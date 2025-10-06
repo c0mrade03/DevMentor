@@ -1,35 +1,27 @@
-# Workflow name
 name: DevMentor CI
 
-# This section defines the events that will trigger this workflow to run.
+# Define the events that will trigger this workflow.
 on:
-  # Run the workflow on any push event...
   push:
-    # ...but only for the 'main' branch.
     branches:
       - main
-  # Also run the workflow on any pull request that targets the 'main' branch.
   pull_request:
     branches:
       - main
 
-# This section defines the jobs that will be executed.
+# Define the jobs to be executed.
 jobs:
-  # We are defining a single job and giving it the ID 'test_setup'.
-  test_setup:
-    # This specifies the type of virtual machine (runner) the job will run on.
-    # 'ubuntu-latest' is the standard, reliable choice.
+  # Define a single job with the ID 'build-cpu'.
+  build-cpu:
+    # Specify that this job will run on a standard Ubuntu runner.
     runs-on: ubuntu-latest
 
-    # A job is a sequence of individual steps.
+    # Define the sequence of steps for this job.
     steps:
-      # Step 1: Check out the repository's code.
-      # 'uses' tells the job to run a pre-built, reusable action.
-      # 'actions/checkout@v4' is the official action for downloading your code.
+      # Step 1: Download the repository's code onto the runner.
       - name: Checkout repository code
         uses: actions/checkout@v4
 
-      # Step 2: Run a simple echo command.
-      # 'run' tells the job to execute a shell command.
-      - name: Print a message
-        run: echo "Hello, World! The CI workflow was triggered successfully"
+      # Step 2: Build the CPU-specific Docker image.
+      - name: Build Docker image (CPU)
+        run: docker compose build app-cpu

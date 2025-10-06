@@ -1,95 +1,125 @@
 import streamlit as st
 import time
+import subprocess
+import sys
 import os
-from ingest.chain_setup import load_rag_chain
+import shutil
 
-
-def get_available_github_repos():
-    vector_store_dir = "data/vector_stores"
-    if not os.path.exists(vector_store_dir):
-        return []
-    available_repos = [i for i in os.listdir(
-        vector_store_dir) if os.path.isdir(os.path.join(vector_store_dir, i))]
-    return available_repos
-
-
-# Configure the Streamlit page settings, such as title and layout.
-st.set_page_config(
-    page_title="DevMentor AI",
-    page_icon="🤖",
-    layout="wide"
+# Page Configuration and Title
+st.set_page_config(page_title="Add Repository", page_icon="➕")
+st.title("Add a New Knowledge Base 🧠")
+st.info(
+    "Paste a public GitHub repository URL below to download, process, and "
+    "index it into a new vector store."
 )
 
-# Display the main title of the application.
-st.title("DevMentor: AI Software Architecture Assistant 🤖")
+# Initialize Session State
+# Initialize our flag at the start. This runs only once.
+if "confirm_overwrite" not in st.session_state:
+    st.session_state.confirm_overwrite = False
+if "repo_to_overwrite" not in st.session_state:
+    st.session_state.repo_to_overwrite = None
+if "url_to_clone" not in st.session_state:
+    st.session_state.url_to_clone = None
 
-# Initialize a chat history list in the session state if it doesn't already exist.
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "active_repo" not in st.session_state:
-    st.session_state.active_repo = None
+# Helper Function for the Ingestion Process
+# Put the subprocess logic in a function to avoid repeating code.
 
-github_repos = get_available_github_repos()
 
-# Handle the "empty state" where no github repositories are present.
-if not github_repos:
-    st.warning("No knowledge bases found. Please add a repository first.")
-    st.info(
-        "You can add a new knowledge base by navigating to the "
-        "'Add Repo' page from the sidebar."
+def start_ingestion(github_url):
+    st.success(
+        f"Starting ingestion for {github_url}. This may take several minutes...")
+    log_placeholder = st.empty()
+    log_output = ""
+    command = [sys.executable, "-m",
+               "ingest.create_vectorstore", "--url", github_url]
+
+    try:
+        start_time = time.time()
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            bufsize=1,
+        )
+        for line in process.stdout:
+            log_output += line
+            log_placeholder.code(log_output, language="log")
+        process.wait()
+        end_time = time.time()
+        duration = end_time-start_time
+        if process.returncode == 0:
+            st.success(
+                f"✅ Ingestion complete in {duration:.2f} seconds! "
+                "The new knowledge base is ready."
+            )
+            st.balloons()
+        else:
+            st.error(
+                "❌ Ingestion failed. See logs above for details. "
+                f"Exit code: {process.returncode}"
+            )
+    except Exception as e:
+        st.error(f"An error occurred while launching the script: {e}")
+
+
+# Main UI Logic
+github_url = st.text_input("Public GitHub Repository URL:")
+
+if st.button("Download and Index Repository"):
+    if github_url:
+        # Calculate the path where the repo would be cloned.
+        storage_dir = "data/github_repos"
+        repo_name = github_url.split("/")[-1].replace(".git", "")
+        clone_path = os.path.join(storage_dir, repo_name)
+
+        # Check if the directory already exists.
+        if os.path.exists(clone_path):
+            # If it exists, DON'T delete. Instead, set our flag and save the path.
+            st.session_state.confirm_overwrite = True
+            st.session_state.repo_to_overwrite = clone_path
+            st.session_state.url_to_clone = github_url
+        else:
+            # If it doesn't exist, start the ingestion process immediately.
+            start_ingestion(github_url)
+    else:
+        st.warning("Please enter a GitHub URL.")
+
+# Confirmation UI Block
+# This block of code only runs if our confirmation flag is True.
+if st.session_state.confirm_overwrite:
+    st.warning(
+        f"Repository already exists at: `{st.session_state.repo_to_overwrite}`"
+        "\n\nDo you want to delete the existing folder and re-index it?"
     )
-    st.stop()
 
-# Create the dropdown menu for the user to select a knowledge base.
-selected_repo = st.selectbox(
-    "Select a Knowledge Base to Chat With:",
-    options=github_repos
-)
+    # Create two columns for the Yes/No buttons.
+    col1, col2 = st.columns(2)
 
-# Block for change detection and history reset
-if st.session_state.active_repo != selected_repo:
-    # If the selected repo has changed, we reset the chat
-    st.session_state.messages = []
-    # Update our tracker to the new selection
-    st.session_state.active_repo = selected_repo
-    
-# Load the RAG chain once and cache it for performance using a spinner for user feedback.
-with st.spinner("Loading AI model and vector store..."):
-    rag_chain = load_rag_chain(selected_repo)
+    with col1:
+        if st.button("Yes, Overwrite"):
+            # If user says yes, perform the deletion and start ingestion.
+            st.info(f"Deleting existing repository...")
+            shutil.rmtree(st.session_state.repo_to_overwrite)
 
-# Handle the case where the vector store might be missing or corrupted.
-if not rag_chain:
-    st.error(
-        f"Failed to load the knowledge base for '{selected_repo}'. "
-        "It may be corrupted or missing. Please try re-indexing it."
-    )
-    st.stop()
+            # Start the ingestion process.
+            start_ingestion(st.session_state.url_to_clone)
 
-# Display the past messages from the chat history on each script rerun.
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+            # Reset the flags to exit the confirmation state.
+            st.session_state.confirm_overwrite = False
+            st.session_state.repo_to_overwrite = None
+            st.session_state.url_to_clone = None
+            # Rerun to clean up the UI.
+            st.rerun()
 
-# Handle new user input from the chat box at the bottom of the screen.
-if prompt := st.chat_input("Ask a question about the codebase..."):
-
-    # Add the user's new message to the chat history and display it on the screen.
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # Stream the assistant's response to create a smooth, character-by-character typing effect.
-    with st.chat_message("assistant"):
-        placeholder = st.empty()
-        full_response = ""
-        for chunk in rag_chain.stream(prompt):
-            for char in chunk:
-                full_response += char
-                placeholder.markdown(full_response + "▌")
-                time.sleep(0.005)
-        # After the stream is complete, display the final response without the cursor.
-        placeholder.markdown(full_response)
-
-    # Add the final, complete assistant's response to the chat history.
-    st.session_state.messages.append(
-        {"role": "assistant", "content": full_response})
+    with col2:
+        if st.button("No, Cancel"):
+            # If user says no, just reset the flags and show a message.
+            st.info("Operation cancelled.")
+            st.session_state.confirm_overwrite = False
+            st.session_state.repo_to_overwrite = None
+            st.session_state.url_to_clone = None
+            # We force a rerun to clean up the UI.
+            st.rerun()

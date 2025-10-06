@@ -10,6 +10,7 @@ torchaudio
 
 # Core AI and LangChain components
 langchain
+langchain_community
 langchain-google-genai
 langchain-huggingface
 
