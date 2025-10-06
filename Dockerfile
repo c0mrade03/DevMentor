@@ -4,8 +4,11 @@ FROM python:3.10-slim
 # Set the working directory for subsequent commands inside the container.
 WORKDIR /app
 
+# Take arguments for requirements file based on your system cpu or gpu
+ARG REQS_FILE=requirements.txt
+
 # Copy the requirements file first to leverage Docker's layer caching.
-COPY requirements.txt .
+COPY ${REQS_FILE} ./requirements.txt
 
 # Install the Python dependencies listed in the requirements file.
 RUN pip install --no-cache-dir -r requirements.txt

@@ -1,28 +1,78 @@
+# This file defines the services, networks, and volumes for the Docker application.
+
 services:
-  # Service 1: The Streamlit Web App
-  app:
-    build: .
-    image: devmentor
+  # Service 1: The Streamlit Web App (CPU Version)
+  app-cpu:
+    build:
+      context: .
+      args:
+        REQS_FILE: requirements.txt
+    image: devmentor-cpu
     ports:
       - "8501:8501"
     env_file:
       - .env
     environment:
-      - VECTOR_STORE_PATH=/app/vector_store
+      VECTOR_STORE_PATH: /app/data/vector_stores
     volumes:
-      - ../vector_store:/app/vector_store
+      - ./data/vector_stores:/app/data/vector_stores
 
-  # Service 2: The Command-Line Interface (CLI)
-  cli:
-    build: .
-    image: devmentor
-    stdin_open: true  # Required for the interactive CLI
-    tty: true         # Required for the interactive CLI
+  # Service 2: The Streamlit Web App (GPU Version)
+  app-gpu:
+    build:
+      context: .
+      args:
+        REQS_FILE: requirements-gpu.txt
+    image: devmentor-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ports:
+      - "8502:8501"
     env_file:
       - .env
     environment:
-      - VECTOR_STORE_PATH=/app/vector_store
+      VECTOR_STORE_PATH: /app/data/vector_stores
     volumes:
-      - ../vector_store:/app/vector_store
-    # override the Dockerfile's CMD
+      - ./data/vector_stores:/app/data/vector_stores
+
+  # Service 3: The Command-Line Interface (CLI - CPU Version)
+  cli-cpu:
+    # This service reuses the devmentor-cpu image built by the app-cpu service.
+    image: devmentor-cpu
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    environment:
+      VECTOR_STORE_PATH: /app/data/vector_stores
+    volumes:
+      - ./data/vector_stores:/app/data/vector_stores
+    # This overrides the Dockerfile's CMD to run the CLI script.
     command: ["python", "query_rag.py"]
+
+  # Service 4: The Command-Line Interface (CLI - GPU Version)
+  cli-gpu:
+    # This service reuses the devmentor-gpu image built by the app-gpu service.
+    image: devmentor-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+    environment:
+      VECTOR_STORE_PATH: /app/data/vector_stores
+    volumes:
+      - ./data/vector_stores:/app/data/vector_stores
+    command: ["python", "query_rag.py"]
+
