@@ -38,12 +38,11 @@ def collect_target_files(base_path: str) -> List[str]:
 if __name__ == "__main__":
     # Load configuration for the target repository and file extensions.
     target_repo = config.TARGET_REPO_PATH
-    extensions = config.FILE_EXTENSIONS
 
     # Collect all the target files from the specified repository.
-    files = collect_target_files(target_repo, extensions)
+    files = collect_target_files(target_repo)
 
     # Log the total number of files found and display the first 10.
     logger.info(f"[+] Found {len(files)} files:")
-    for f in files[:10]:
+    for f in files:
         logger.info(f"\u2514\u2500\u2500 {os.path.relpath(f, target_repo)}")

@@ -3,4 +3,5 @@ venv_cpu
 __pycache__/
 tests
 .env
+.vscode
 data

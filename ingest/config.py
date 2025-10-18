@@ -2,7 +2,7 @@
 import os
 
 # Default repository path for local ingestion.
-TARGET_REPO_PATH = "../cookiecutter-django"
+TARGET_REPO_PATH = "data/github_repos/github-mcp-server"
 
 # A list of directory names to completely ignore during the file collection process.
 # This is crucial for skipping version control, virtual environments, and build artifacts.
